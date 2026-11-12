@@ -1,7 +1,7 @@
 """Extract Mermaid fenced blocks from Markdown without executing their contents."""
 import re
 
-MERMAID_FENCE = re.compile(r"^\s*```mermaid\s*\n(.*?)^\s*```\s*$", re.I | re.M | re.S)
+MERMAID_FENCE = re.compile(r"^\s*```mermaid\s*\n(.*?)^\s*```\s*$", re.I | re.M)
 
 def extract_mermaid(source: str):
     return [match.group(1).strip() for match in MERMAID_FENCE.finditer(source)]
