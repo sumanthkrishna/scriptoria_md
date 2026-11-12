@@ -10,6 +10,7 @@ from utils.export_docx import export_docx
 from utils.export_pptx import export_pptx
 from utils.mermaid_export import mermaid_png
 from utils.export_video import export_video
+from utils.document_assets import embed_local_images
 from components.tts_player import tts_player
 
 st.set_page_config(page_title="Scriptoria",page_icon="📖",layout="wide",initial_sidebar_state="expanded")
@@ -76,6 +77,11 @@ if not st.session_state.content:
 content=st.session_state.content
 name=st.session_state.filename
 rendered=render_markdown(content)
+if st.session_state.source not in ('Upload', 'Bundled sample') and Path(st.session_state.source).is_absolute():
+    try:
+        rendered=embed_local_images(rendered, st.session_state.source)
+    except (ValueError, PermissionError, OSError):
+        st.warning('Local images could not be resolved safely.')
 text=plain_text(rendered)
 st.title("📖 "+name)
 st.caption(st.session_state.source+"  ·  "+str(len(content.split()))+" words  ·  "+str(len(content))+" characters")
