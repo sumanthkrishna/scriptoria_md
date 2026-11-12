@@ -1,0 +1,20 @@
+<style>
+:root {--navy:#132d53;--teal:#087f8c}
+.block-container{max-width:1400px;padding-top:1.4rem}
+[data-testid="stSidebar"]{background:linear-gradient(155deg,#142e56,#087f8c)}
+[data-testid="stSidebar"] *{color:#f8fbff}
+h1,h2,h3{color:#1765a2}
+.stButton button,.stDownloadButton button{border-radius:11px}
+.reading-canvas{background:white;color:#19324a;border-radius:16px;padding:30px 38px;
+box-shadow:0 4px 24px #152b4514;line-height:1.75}
+.reading-canvas table{border-collapse:collapse;width:100%}
+.reading-canvas td,.reading-canvas th{border:1px solid #cbd5e1;padding:8px}
+.reading-canvas pre{background:#edf2f7;padding:12px;overflow:auto;border-radius:8px}
+.reading-canvas blockquote{border-left:4px solid #087f8c;padding-left:16px}
+.theme-GitHub{font-family:system-ui}.theme-Academic{font-family:Georgia,serif}
+.theme-Compact{font-size:13px;line-height:1.35;padding:16px}
+.theme-Dark{background:#162238;color:#f1f5f9}
+.theme-Dark h1,.theme-Dark h2,.theme-Dark h3{color:#8ccfff}
+@media print{header,[data-testid="stSidebar"],[data-testid="stToolbar"],.stTabs,
+button{display:none!important}.reading-canvas{box-shadow:none;padding:0}}
+</style>
