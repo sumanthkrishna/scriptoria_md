@@ -4,6 +4,7 @@ Requires Chromium (Playwright), FFmpeg, edge-tts and MoviePy 1.x.
 Edge TTS sends section text to Microsoft's speech service.
 """
 import asyncio
+from html import escape
 import os
 import tempfile
 from pathlib import Path
@@ -62,7 +63,7 @@ def export_video(html, title="Scriptoria", voice="en-US-AriaNeural", fps=12, pro
                     h1,h2,h3{color:#1765a2}pre{white-space:pre-wrap;font-size:23px;background:#edf2f7;padding:22px}
                     table{border-collapse:collapse}td,th{border:1px solid #aaa;padding:12px}
                     img{max-width:100%}"""
-                    page.set_content(f'<html><head><style>{css}</style></head><body><article><h1>{title}</h1>{html}</article></body></html>',
+                    page.set_content(f'<html><head><style>{css}</style></head><body><article><h1>{escape(title)}</h1>{html}</article></body></html>',
                                      wait_until="load", timeout=30000)
                     total_height = page.evaluate("document.documentElement.scrollHeight")
                     max_scroll = max(0, total_height - HEIGHT)
