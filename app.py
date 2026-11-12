@@ -9,6 +9,7 @@ from utils.export_pdf import export_pdf
 from utils.export_docx import export_docx
 from utils.export_pptx import export_pptx
 from utils.mermaid_export import mermaid_png
+from utils.export_video import export_video
 from components.tts_player import tts_player
 
 st.set_page_config(page_title="Scriptoria",page_icon="📖",layout="wide",initial_sidebar_state="expanded")
@@ -117,4 +118,19 @@ with tab_pdf: export_tab("PDF",export_pdf,"pdf","application/pdf")
 with tab_word: export_tab("Word",export_docx,"docx","application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 with tab_slides: export_tab("PowerPoint",export_pptx,"pptx","application/vnd.openxmlformats-officedocument.presentationml.presentation")
 with tab_video:
-    st.warning("MP4 narration and synchronized scrolling are experimental. Chromium, FFmpeg, Edge TTS and MoviePy must be installed. This build does not yet expose a working video generator.")
+    st.caption("Create a 1920×1080 MP4 with section narration and scrolling screenshots.")
+    st.warning("Video narration uses external Microsoft Edge TTS. Document text is sent to that service. Do not use for confidential material without authorization.")
+    voice=st.selectbox("Narration voice",["en-US-AriaNeural","en-US-GuyNeural","en-GB-SoniaNeural"])
+    st.caption("Requires Playwright Chromium and FFmpeg. Video rendering can be slow.")
+    if st.button("Generate MP4"):
+        try:
+            with st.spinner("Rendering narration, screenshots and MP4…"):
+                bar=st.progress(0)
+                video=export_video(rendered,Path(name).stem,voice=voice,progress=bar.progress)
+                st.session_state.downloads["mp4"]=(st.session_state.doc_hash,video)
+            st.success("Video generated")
+        except Exception as exc:
+            st.error("Video generation failed: "+str(exc))
+    cached=st.session_state.downloads.get("mp4")
+    if cached and cached[0]==st.session_state.doc_hash:
+        st.download_button("Download MP4",cached[1],file_name=Path(name).stem+".mp4",mime="video/mp4")
