@@ -11,6 +11,8 @@ from utils.export_pptx import export_pptx
 from utils.mermaid_export import mermaid_png
 from utils.export_video import export_video
 from components.tts_player import tts_player
+from components.mermaid_viewer import mermaid_viewer
+from utils.diagrams import extract_mermaid
 
 st.set_page_config(page_title="Scriptoria",page_icon="📖",layout="wide",initial_sidebar_state="expanded")
 st.markdown(Path("static/styles.css").read_text(),unsafe_allow_html=True)
@@ -86,7 +88,7 @@ if toc:
     with st.expander("Table of contents",expanded=False):
         for level,title,anchor in toc:
             st.markdown("　"*(level-1)+"• "+title)
-tab_read,tab_audio,tab_pdf,tab_word,tab_slides,tab_video=st.tabs(["📄 Read","🔊 Listen","📕 PDF","📝 Word","📊 Slides","🎬 Video"])
+tab_read,tab_diagrams,tab_audio,tab_pdf,tab_word,tab_slides,tab_video=st.tabs(["📄 Read","📐 Diagrams","🔊 Listen","📕 PDF","📝 Word","📊 Slides","🎬 Video"])
 with tab_read:
     st.markdown('<article class="reading-canvas theme-'+theme+'">'+rendered+'</article>',unsafe_allow_html=True)
     st.caption("Use the browser Print command to print this document.")
@@ -100,6 +102,24 @@ with tab_read:
                     data=mermaid_png(html_lib.unescape(diagram))
                     st.download_button("Download diagram "+str(i+1),data,file_name=f"diagram-{i+1}.png",mime="image/png")
                 except Exception as exc: st.error(str(exc))
+with tab_diagrams:
+    diagrams=extract_mermaid(content)
+    if diagrams:
+        st.caption("Mermaid previews run inside an isolated iframe. JavaScript loads from jsDelivr unless a local vetted bundle is installed.")
+        mermaid_viewer(diagrams)
+        for i,diagram in enumerate(diagrams):
+            with st.expander("PNG export for diagram "+str(i+1)):
+                if st.button("Render PNG "+str(i+1),key="mermaid_png_"+str(i)):
+                    try:
+                        data=mermaid_png(diagram)
+                        st.session_state.downloads["diagram_"+str(i)]=(st.session_state.doc_hash,data)
+                    except Exception as exc:
+                        st.error(str(exc))
+                cached=st.session_state.downloads.get("diagram_"+str(i))
+                if cached and cached[0]==st.session_state.doc_hash:
+                    st.download_button("Download PNG "+str(i+1),cached[1],file_name="diagram-"+str(i+1)+".png",mime="image/png",key="diagram_dl_"+str(i))
+    else:
+        st.info("No Mermaid diagrams found in this document.")
 with tab_audio:
     st.caption("Browser Web Speech API: voices and offline support depend on the browser.")
     tts_player(text[:50000])
